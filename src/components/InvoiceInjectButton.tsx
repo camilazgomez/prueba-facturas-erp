@@ -1,5 +1,7 @@
 type InjectButtonProps = {
   disabled: boolean;
+  invoiceIds: string[];
+  onSuccess?: () => void;
 };
 
 export default function InjectButton({ disabled }: InjectButtonProps) {
