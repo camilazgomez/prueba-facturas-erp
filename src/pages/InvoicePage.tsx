@@ -10,7 +10,7 @@ export default function InvoicesPage() {
     const [page, setPage] = useState(1);
     const [selected, setSelected]   = useState<Set<string>>(new Set());
 
-    const { invoices, loading, error } = useInvoices();
+    const { invoices, setInvoices, loading, error } = useInvoices();
     const selectableNotInjected = invoices.filter(
     (inv) => !inv.injected && selected.has(inv.id)
     );
@@ -45,6 +45,14 @@ export default function InvoicesPage() {
             <InjectButton
             disabled={!canInject}             
             invoiceIds={selectableNotInjected.map((i) => i.id)}
+            onSuccess={() => {
+            setInvoices(prev =>
+            prev.map(inv =>
+                selected.has(inv.id) ? { ...inv, injected: true } : inv
+            )
+            );
+            setSelected(new Set());
+        }}
             />
         </div>
 

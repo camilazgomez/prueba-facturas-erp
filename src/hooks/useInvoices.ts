@@ -14,5 +14,5 @@ export function useInvoices() {
       .finally(() => setLoading(false));
   }, []);
 
-  return { invoices, loading, error };
+  return { invoices, setInvoices, loading, error };
 }
