@@ -44,7 +44,7 @@ export default function InvoicePagination({ currentPage, totalPages, onPageChang
   const pages = getVisiblePages(currentPage, totalPages);
 
   return (
-    <nav className="w-full flex justify-center mt-6">
+    <nav className="w-full flex justify-center mt-2">
       <ul className="flex items-center space-x-1 text-sm text-gray-700">
         <li>
           <button

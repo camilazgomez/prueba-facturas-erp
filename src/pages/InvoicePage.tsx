@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 
 import InjectButton from "../components/InvoiceInjectButton";
 import InvoiceTable from "../components/InvoiceTable";
@@ -13,6 +13,7 @@ import { flushSync } from "react-dom";
 
 export default function InvoicesPage() {
     const [page, setPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
     const [selected, setSelected]   = useState<Set<string>>(new Set());
     const [modalOpen, setModalOpen] = useState(false);
     const [filters, setFilters] = useState<{
@@ -48,9 +49,28 @@ export default function InvoicesPage() {
     return nameMatches && currencyMatches && statusMatches;
     });
 
-    const perPage = 10; 
+    const tableWrapperRef = useRef<HTMLDivElement>(null);
+    const sampleRowRef   = useRef<HTMLTableRowElement>(null); 
+    useLayoutEffect(() => {
+        const updatePerPage = () => {
+        const wrapper = tableWrapperRef.current;
+        const row     = sampleRowRef.current;
+
+        if (!wrapper || !row) return;
+
+        const availableHeight = wrapper.getBoundingClientRect().height;
+        const rowHeight       = row.getBoundingClientRect().height || 48;
+        const rows            = Math.floor(availableHeight / rowHeight);
+        setPerPage(Math.max(5, Math.min(100, rows))); 
+        };
+        updatePerPage();    
+        window.addEventListener("resize", updatePerPage); 
+        return () => window.removeEventListener("resize", updatePerPage);
+        }, []);
+
     const totalPages = Math.ceil(filtered.length / perPage);
-    const paginated = filtered.slice((page - 1) * perPage, page * perPage);
+    const paginated  = filtered.slice((page - 1) * perPage, page * perPage);
+
 
     const toggleSelection = (id: string) => {
         setSelected(prev => {
@@ -69,7 +89,7 @@ export default function InvoicesPage() {
 
     return (
         <section className="bg-white w-full h-full p-6">
-        <div className="flex justify-between items-end flex-wrap gap-4 mb-4">
+        <div className="flex justify-between items-end flex-wrap gap-2 mb-4">
             <InvoiceFilters
                 {...filters}
                 onChange={(f) => {setFilters(f);setPage(1);}}
@@ -88,11 +108,14 @@ export default function InvoicesPage() {
             Mostrando {filtered.length}/{invoices.length} facturas
             </p>
 
+        <div ref={tableWrapperRef} className="grow overflow-y-auto">
         <InvoiceTable
             invoices={paginated}
             selected={selected}
             onToggle={toggleSelection}
+            rowRef={sampleRowRef}               
         />
+        </div>
         <InvoicePagination  currentPage={page}
         totalPages={totalPages}
         onPageChange={setPage}/>

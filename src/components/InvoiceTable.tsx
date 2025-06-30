@@ -5,10 +5,11 @@ type Props = {
   invoices:  Invoice[];
   selected:  Set<string>;
   onToggle: (id: string) => void;
+  rowRef?:  React.Ref<HTMLTableRowElement>;
 };
 
 
-export default function InvoiceTable({ invoices, selected, onToggle }: Props) {
+export default function InvoiceTable({ invoices, selected, onToggle, rowRef }: Props) {
     return (
         <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 bg-white">
@@ -22,8 +23,8 @@ export default function InvoiceTable({ invoices, selected, onToggle }: Props) {
             </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 text-sm text-gray-900 border-b border-gray-200">
-            {invoices.map((invoice) => (
-                <tr key={invoice.id} className="hover:bg-gray-50">
+            {invoices.map((invoice, idx) => (
+                <tr key={invoice.id} className="hover:bg-gray-50" ref={idx === 0 ? rowRef : undefined}>
                 <td className="px-4 py-3">
                     <input
                         type="checkbox"
