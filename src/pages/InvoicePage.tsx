@@ -7,11 +7,14 @@ import { useInvoices } from "../hooks/useInvoices";
 import InvoiceFilters from "../components/InvoiceFilter";
 import {STATUS_FILTERS} from "../components/InvoiceFilter"
 import type { CurrencyFilter,StatusFilter, } from "../components/InvoiceFilter";
+import ConfirmModal from "../components/ConfirmModal"
+import { flushSync } from "react-dom";
 
 
 export default function InvoicesPage() {
     const [page, setPage] = useState(1);
     const [selected, setSelected]   = useState<Set<string>>(new Set());
+    const [modalOpen, setModalOpen] = useState(false);
     const [filters, setFilters] = useState<{
         search: string;
         currency: CurrencyFilter[];   
@@ -76,18 +79,11 @@ export default function InvoicesPage() {
                 }}
                 />
             <InjectButton
-            disabled={!canInject}             
-            invoiceIds={selectableNotInjected.map((i) => i.id)}
-            onSuccess={() => {
-            setInvoices(prev =>
-            prev.map(inv =>
-                selected.has(inv.id) ? { ...inv, injected: true } : inv
-            )
-            );
-            setSelected(new Set());
-        }}
+                disabled={!canInject}
+                onClick={() => setModalOpen(true)}
             />
         </div>
+        
         <p className="text-md font-semibold text-gray-700 mb-2">
             Mostrando {filtered.length}/{invoices.length} facturas
             </p>
@@ -100,6 +96,28 @@ export default function InvoicesPage() {
         <InvoicePagination  currentPage={page}
         totalPages={totalPages}
         onPageChange={setPage}/>
+
+        <ConfirmModal
+            isOpen={modalOpen}
+            invoices={selectableNotInjected}
+            onClose={() => setModalOpen(false)}
+            onConfirm={((ids: string[]) => {
+                flushSync(() =>
+                setInvoices((prev) => {
+                    const idSet = new Set(ids);          
+                    return prev.map((inv) =>
+                    idSet.has(inv.id) ? { ...inv, injected: true } : inv
+                    );
+                    })
+                );
+                setSelected((prev) => {
+                const next = new Set(prev);
+                ids.forEach((id) => next.delete(id));
+                return next;
+                });
+                setModalOpen(false);
+            })}
+            />
         </section>
     );
 }
