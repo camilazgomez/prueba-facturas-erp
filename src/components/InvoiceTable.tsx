@@ -1,6 +1,5 @@
 import type { Invoice } from "../types/invoice";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
 
 // Por mientras mockeado después remplazo con llamado api
 export const MOCK_INVOICES: Invoice[] = [
@@ -15,13 +14,15 @@ export const MOCK_INVOICES: Invoice[] = [
   { id: '9', receiverName: 'Andrés Morales', amount: 14000000, currency: 'CLP', injected: true },
   { id: '10', receiverName: 'Claudia Aguirre', amount: 4400000, currency: 'CLP', injected: true },
   { id: '11', receiverName: 'Ricardo Castro', amount: 4400000, currency: 'CLP', injected: true },
-  { id: '12', receiverName: 'Innovaciones S.A.', amount: 283524, currency: 'CLP', injected: true },
-  
+  { id: '12', receiverName: 'Innovaciones S.A.', amount: 283524, currency: 'CLP', injected: true }, 
 ];
 
+type Props = {
+  invoices: Invoice[];
+};
 
-export default function InvoiceTable() {
-    const [invoices] = useState<Invoice[]>(MOCK_INVOICES);
+
+export default function InvoiceTable({ invoices }: Props) {
     return (
         <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 bg-white">

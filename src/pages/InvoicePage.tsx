@@ -3,17 +3,32 @@ import { useState } from "react";
 import InjectButton from "../components/InvoiceInjectButton";
 import InvoiceTable from "../components/InvoiceTable";
 import InvoicePagination from "../components/InvoicePagination";
+import { MOCK_INVOICES } from "../components/InvoiceTable";
+import type { Invoice } from "../types/invoice";
+
 
 export default function InvoicesPage() {
-  return (
-    <section className="bg-white w-full h-full p-6">
-      <div className="flex justify-end pt-2 pb-4">
-        <InjectButton disabled />
-      </div>
+    const [invoices] = useState<Invoice[]>(MOCK_INVOICES);
+    const [page, setPage] = useState(1);
 
-      <InvoiceTable />
-      <InvoicePagination />
-    </section>
-  );
+    const perPage = 10; 
+    const totalPages = Math.ceil(invoices.length / perPage);
+    const paginated = invoices.slice(
+        (page - 1) * perPage,
+        page * perPage
+    );
+
+    return (
+        <section className="bg-white w-full h-full p-6">
+        <div className="flex justify-end pt-2 pb-4">
+            <InjectButton disabled />
+        </div>
+
+        <InvoiceTable invoices={paginated}/>
+        <InvoicePagination  currentPage={page}
+        totalPages={totalPages}
+        onPageChange={setPage}/>
+        </section>
+    );
 }
 
