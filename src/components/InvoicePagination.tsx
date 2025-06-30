@@ -7,40 +7,42 @@ type Props = {
 };
 
 function getVisiblePages(current: number, total: number): (number | "...")[] {
+  const raw = new Set<number>();
+
+  raw.add(1);
+  raw.add(total);
+
+  raw.add(current);
+  if (current - 1 > 1) raw.add(current - 1);
+  if (current + 1 < total) raw.add(current + 1);
+
   if (total <= 7) {
-    const allPages: number[] = [];
-    for (let i = 1; i <= total; i++) {
-      allPages.push(i);
-    }
-    return allPages;
+    for (let p = 2; p < total; p++) raw.add(p);
   }
+
+  const sorted = Array.from(raw).sort((a, b) => a - b);
+
   const result: (number | "...")[] = [];
-  result.push(1);
-  const showLeftDots = current > 3;
-  
-  if (showLeftDots) {
-    result.push("...");
+  for (let i = 0; i < sorted.length; i++) {
+    const page = sorted[i];
+    if (i === 0) {
+      result.push(page);
+      continue;
+    }
+    const prev = sorted[i - 1];
+    if (page === prev + 1) {
+      result.push(page);            
+    } else {
+      result.push("...", page);     
+    }
   }
-
-  const firstMiddle = Math.max(2, current - 1);
-  const lastMiddle  = Math.min(total - 1, current + 1);
-
-  for (let p = firstMiddle; p <= lastMiddle; p++) {
-    result.push(p);
-  }
-
-  const showRightDots = current < total - 2;
-  if (showRightDots) {
-    result.push("...");
-  }
-
-  result.push(total);
 
   return result;
 }
 
 export default function InvoicePagination({ currentPage, totalPages, onPageChange }: Props) {
   const pages = getVisiblePages(currentPage, totalPages);
+  console.log('visible', pages);
 
   return (
     <nav className="w-full flex justify-center mt-6">
@@ -55,24 +57,29 @@ export default function InvoicePagination({ currentPage, totalPages, onPageChang
           </button>
         </li>
 
-        {pages.map((p, idx) =>
-          p === "..." ? (
-            <li key={idx} className="px-2 select-none text-gray-500">
-              ...
+        {pages.map((p, idx) => {
+        const key =
+            p === "..."
+            ? `ellipsis-${idx}` 
+            : `page-${p}`; 
+
+        return p === "..." ? (
+            <li key={key} className="px-2 select-none text-gray-500">
+            …
             </li>
-          ) : (
-            <li key={p}>
-              <button
+        ) : (
+            <li key={key}>
+            <button
                 onClick={() => onPageChange(p)}
                 className={`px-3 py-1 rounded hover:bg-gray-100 ${
-                  p === currentPage ? "bg-gray-200 font-medium text-gray-900" : ""
+                p === currentPage ? "bg-gray-200 font-medium text-gray-900" : ""
                 }`}
-              >
+            >
                 {p}
-              </button>
+            </button>
             </li>
-          )
-        )}
+        );
+        })}
         <li>
           <button
             onClick={() => onPageChange(currentPage + 1)}
