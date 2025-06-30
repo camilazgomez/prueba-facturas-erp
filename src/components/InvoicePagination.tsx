@@ -42,7 +42,6 @@ function getVisiblePages(current: number, total: number): (number | "...")[] {
 
 export default function InvoicePagination({ currentPage, totalPages, onPageChange }: Props) {
   const pages = getVisiblePages(currentPage, totalPages);
-  console.log('visible', pages);
 
   return (
     <nav className="w-full flex justify-center mt-6">
