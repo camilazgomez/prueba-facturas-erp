@@ -73,10 +73,7 @@ export default function ConfirmInjectModal({
                     <tr key={inv.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-left">{inv.receiverName}</td>
                     <td className="px-4 py-3 text-right">
-                        {inv.amount.toLocaleString("es-CL", {
-                        style: "currency",
-                        currency: inv.currency,
-                        })}
+                    ${inv.amount.toLocaleString("es-CL")}
                     </td>
                     <td className="px-4 py-3 text-left">{inv.currency}</td>
                     {onRemove && (
@@ -104,8 +101,8 @@ export default function ConfirmInjectModal({
             <button
                 onClick={handleConfirm}
                 disabled={loading}
-                className="px-4 py-2 rounded-md bg-indigo-800 text-white text-sm font-semibold
-                            hover:bg-indigo-900 disabled:bg-indigo-300
+                className="px-4 py-2 rounded-md bg-blue-950 text-white text-sm font-semibold
+                            hover:bg-blue-900 disabled:bg-blue-300
                             flex items-center justify-center gap-2"
                 >
                 {loading && (

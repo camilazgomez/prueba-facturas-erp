@@ -30,24 +30,25 @@ export default function InvoiceTable({ invoices, selected, onToggle }: Props) {
                         disabled={invoice.injected}
                         checked={selected.has(invoice.id)}
                         onChange={() => onToggle(invoice.id)}
-                        className="accent-blue-600 bg-white border-gray-300 rounded"
+                        className="accent-blue-950 bg-white border-gray-300 rounded"
                         />
                 </td>
                 <td className="px-4 py-3 text-left">{invoice.receiverName}</td>
                 <td className="px-4 py-3 text-right">
-                    {invoice.amount.toLocaleString("es-CL", {
-                    style: "currency",
-                    currency: invoice.currency,
-                    })}
+                    ${invoice.amount.toLocaleString("es-CL")}
                 </td>
                 <td className="px-4 py-3 text-left">{invoice.currency}</td>
                 <td className="px-4 py-3 flex justify-center items-center">
                     {invoice.injected ? (
-                    <CheckCircleIcon className="w-5 h-5 text-green-500" />
+                        <span className="p-1 rounded bg-green-50">
+                        <CheckCircleIcon className="w-4 h-4 text-green-500" />
+                        </span>
                     ) : (
-                    <XCircleIcon className="w-5 h-5 text-red-500" />
+                        <span className="p-1 rounded bg-red-50">
+                        <XCircleIcon className="w-4 h-4 text-red-500" />
+                        </span>
                     )}
-                </td>
+                    </td>
                 </tr>
             ))}
             </tbody>
