@@ -1,14 +1,15 @@
 import { useState, useLayoutEffect, useRef } from "react";
+import { flushSync } from "react-dom";
 
 import InjectButton from "../components/InvoiceInjectButton";
 import InvoiceTable from "../components/InvoiceTable";
 import InvoicePagination from "../components/InvoicePagination";
-import { useInvoices } from "../hooks/useInvoices";
 import InvoiceFilters from "../components/InvoiceFilter";
-import {STATUS_FILTERS} from "../components/InvoiceFilter"
 import type { CurrencyFilter,StatusFilter, } from "../components/InvoiceFilter";
 import ConfirmModal from "../components/ConfirmModal"
-import { flushSync } from "react-dom";
+import { useInvoices } from "../hooks/useInvoices";
+import { filterInvoices } from "../utils/invoiceUtils";
+import { toggleSetSelection } from "../utils/selection.ts";
 
 
 export default function InvoicesPage() {
@@ -27,30 +28,18 @@ export default function InvoicesPage() {
         });
 
     const { invoices, setInvoices, loading, error } = useInvoices();
+    
+    const filtered = filterInvoices(invoices, filters);
+    const totalPages = Math.ceil(filtered.length / perPage);
+    const paginated  = filtered.slice((page - 1) * perPage, page * perPage);
     const selectableNotInjected = invoices.filter(
     (inv) => !inv.injected && selected.has(inv.id)
     );
     const canInject = selectableNotInjected.length > 0;
 
-    const filtered = invoices.filter((inv) => {
-    const nameMatches =
-        !filters.search ||
-        inv.receiverName.toLowerCase().includes(filters.search.toLowerCase());
-
-    const currencyMatches =
-        filters.currency.length === 0 ||
-        filters.currency.includes(inv.currency as CurrencyFilter);
-
-    const statusMatches =
-        filters.status.length === 0 ||
-        (filters.status.includes(STATUS_FILTERS.PENDING) && !inv.injected) ||
-        (filters.status.includes(STATUS_FILTERS.INJECTED) && inv.injected);
-
-    return nameMatches && currencyMatches && statusMatches;
-    });
-
     const tableWrapperRef = useRef<HTMLDivElement>(null);
     const sampleRowRef   = useRef<HTMLTableRowElement>(null); 
+    
     useLayoutEffect(() => {
         const updatePerPage = () => {
         const wrapper = tableWrapperRef.current;
@@ -68,20 +57,9 @@ export default function InvoicesPage() {
         return () => window.removeEventListener("resize", updatePerPage);
         }, []);
 
-    const totalPages = Math.ceil(filtered.length / perPage);
-    const paginated  = filtered.slice((page - 1) * perPage, page * perPage);
-
 
     const toggleSelection = (id: string) => {
-        setSelected(prev => {
-        const next = new Set(prev);
-        if (next.has(id)) {
-        next.delete(id);
-        } else {
-        next.add(id);
-        }
-        return next;
-     });
+    setSelected((prev) => toggleSetSelection(id, prev));
     };
 
     if (loading) return <p className="text-center">Cargando…</p>;
