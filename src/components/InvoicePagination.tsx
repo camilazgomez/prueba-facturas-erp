@@ -6,6 +6,9 @@ type Props = {
   onPageChange: (page: number) => void;
 };
 
+// Genera las páginas visibles en la paginación.
+// Siempre incluye la primera, la última, la actual y sus vecinas.
+// Usa "..." para indicar saltos cuando hay muchas páginas.
 function getVisiblePages(current: number, total: number): (number | "...")[] {
   const raw = new Set<number>();
 

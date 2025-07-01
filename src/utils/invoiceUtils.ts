@@ -2,6 +2,7 @@ import { STATUS_FILTERS } from "../components/InvoiceFilter";
 import type { Invoice } from "../types/invoice";
 import type { CurrencyFilter, StatusFilter } from "../components/InvoiceFilter";
 
+// función que efectua filtro de emisor, currency y estado
 export function filterInvoices(
   invoices: Invoice[],
   filters: {
