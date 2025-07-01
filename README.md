@@ -16,6 +16,16 @@ Se asumió que el contenido de `invoices` permanece estático durante la sesión
 
 Para mejorar la resiliencia del proceso de inyección de facturas, se implementó una lógica de retray con 5 intentos. En cada intento se espera medio segundo mas que en el anterior.
 
+## Extras implementados
+
+A continuación se listan los requisitos opcionales y su estado de implementación:
+
+- Buscador o filtros locales ✅ 
+- Modal de revisión antes de inyectar ✅
+- Visualización del estado de los batches de inyección ❌
+- Uso correcto de Tailwind CSS y TypeScript ✅ 
+-  Deploy en la web ❌
+
 ---
 
 Bienvenido/a a la prueba técnica para la integración de facturas con un sistema ERP. Este repositorio contiene un entorno base creado con **React + Vite**, **Tailwind CSS** preconfigurado y soporte opcional para **TypeScript**.
