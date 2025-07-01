@@ -7,6 +7,7 @@ import InvoicePagination from "../components/InvoicePagination";
 import InvoiceFilters from "../components/InvoiceFilter";
 import type { CurrencyFilter,StatusFilter, } from "../components/InvoiceFilter";
 import ConfirmModal from "../components/ConfirmModal"
+import PageLoader from "../components/PageLoader";
 import { useInvoices } from "../hooks/useInvoices";
 import { filterInvoices } from "../utils/invoiceUtils";
 import { toggleSetSelection } from "../utils/selection.ts";
@@ -62,7 +63,8 @@ export default function InvoicesPage() {
     setSelected((prev) => toggleSetSelection(id, prev));
     };
 
-    if (loading) return <p className="text-center">Cargando…</p>;
+    if (loading) return <PageLoader message="Cargando facturas…" />;
+
     if (error)   return <p className="text-center text-red-600">{error}</p>;
 
     return (
