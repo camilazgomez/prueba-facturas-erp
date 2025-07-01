@@ -1,5 +1,6 @@
 import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { XMarkIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { injectInvoices } from "../services/api";
 
@@ -25,19 +26,29 @@ export default function ConfirmInjectModal({
 }: Props) {
 
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
   const handleConfirm = async () => {
     setLoading(true);
     try {
         const ids = invoices.map((i) => i.id);
         await injectInvoices(ids);
-        onConfirm(ids);     
+        setDone(true);
+        setLoading(false);
+        setTimeout(() => {
+        onConfirm(ids); 
+        onClose();      
+        setDone(false);  
+        }, 800);
     } catch (err) {
-        alert("Falló inyección: " + (err instanceof Error ? err.message : err));
-    } finally {
-        setLoading(false);  
+        alert(
+        "Falló inyección: " +
+            (err instanceof Error ? err.message : String(err))
+        );
+        setLoading(false);
     }
     };
+
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -99,36 +110,48 @@ export default function ConfirmInjectModal({
               Cancelar
             </button>
             <button
-                onClick={handleConfirm}
-                disabled={loading}
-                className="px-4 py-2 rounded-md bg-blue-950 text-white text-sm font-semibold
-                            hover:bg-blue-900 disabled:bg-blue-300
-                            flex items-center justify-center gap-2"
-                >
-                {loading && (
-                    <svg
+            onClick={handleConfirm}
+            disabled={loading || done}
+            className={`px-4 py-2 rounded-md text-sm font-semibold flex items-center gap-2
+                ${
+                done
+                    ? "bg-green-600 hover:bg-green-700"
+                    : "bg-blue-950 hover:bg-blue-900 disabled:bg-blue-300"
+                } text-white`}
+            >
+            {loading && (
+                <>
+                <svg
                     className="animate-spin h-4 w-4 text-white"
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
-                    >
+                >
                     <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
                     />
                     <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                     />
-                    </svg>
-                )}
-                <span>{loading ? "Esperando…" : "Confirmar"}</span>
-                </button>
+                </svg>
+                <span>Esperando…</span>
+                </>
+            )}
+            {done && (
+                <>
+                <CheckCircleIcon className="h-4 w-4 text-white" />
+                <span>Inyectado</span>
+                </>
+            )}
+            {!loading && !done && <span>Confirmar</span>}
+            </button>
           </div>
         </DialogPanel>
       </div>
