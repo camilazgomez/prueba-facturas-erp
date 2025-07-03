@@ -5,7 +5,7 @@
 Este proyecto espera un archivo `.env` con las siguientes variables:
 
 ```env
-VITE_AUTH_EMAIL=cazumaeta1@miuandes.cl
+VITE_AUTH_EMAIL=
 VITE_AUTH_TOKEN=<TOKEN>
 ```
 ## Aclaraciones
